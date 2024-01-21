@@ -19,13 +19,13 @@ public open class Pipeline<Context: Any>(
     }
 
     public suspend fun process(context: Context) {
-        for (stage in stages) {
-            if (filters[stage] == null) continue
+        stages@for (stage in stages) {
+            val stageFilters = filters[stage] ?: continue@stages
 
-            for (filter in filters[stage]!!) {
+            for (filter in stageFilters) {
                 filter(context)
 
-                if (!onFilter(context)) return
+                if (!onFilter(context)) continue@stages
             }
         }
     }
